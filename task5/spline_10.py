@@ -1,4 +1,5 @@
 from typing import List
+from common.utils import __find__range_index
 
 
 def __get_fundamental_spline_1(x: float, x_coords: List[float], i: int):
@@ -13,13 +14,6 @@ def __get_fundamental_spline_1(x: float, x_coords: List[float], i: int):
         return (x - x_coords[i - 1]) / (x_coords[i] - x_coords[i - 1])
 
 
-def __find__range_index(x: float, x_coords: List[float]):
-    if x <= x_coords[0]:
-        return 0
-    n = len(x_coords)
-    return next((i for i in range(1, n) if x_coords[i - 1] <= x < x_coords[i]), n - 1)
-
-
 def get_spline_10(x, x_coords: List[float], y_coords: List[float]):
     i = __find__range_index(x, x_coords)
     if i == 0:
@@ -28,4 +22,5 @@ def get_spline_10(x, x_coords: List[float], y_coords: List[float]):
     else:
         y = y_coords[i] - y_coords[i - 1]
         y_correction = y_coords[i - 1]
+
     return y_correction + y * __get_fundamental_spline_1(x, x_coords, i)
