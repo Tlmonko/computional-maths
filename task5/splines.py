@@ -11,8 +11,6 @@ def __get_fundamental_spline_1(x: float, x_coords: List[float], i: int):
         return 0
     if x_coords[i - 1] <= x <= x_coords[i]:
         return (x - x_coords[i - 1]) / (x_coords[i] - x_coords[i - 1])
-    # if x_coords[i] <= x <= x_coords[i + 1]:
-    #     return (x_coords[i + 1] - x) / (x_coords[i + 1] - x_coords[i])
 
 
 def __find__range_index(x: float, x_coords: List[float]):
