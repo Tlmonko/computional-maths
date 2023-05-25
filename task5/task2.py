@@ -7,7 +7,7 @@ def my_function(x):
 
 
 def my_function_derivative(x):
-    return abs(x) * (1 / 2 * (np.cos(x / 2 + 0.2) ** 2) - 2 * x) + np.sign(x) * (np.tan(x / 2 + 0.2) - x ** 2 + 2)
+    return abs(x) * (1 / (2 * (np.cos(x / 2 + 0.2) ** 2)) - 2 * x) + np.sign(x) * (np.tan(x / 2 + 0.2) - x ** 2 + 2)
 
 
 if __name__ == '__main__':

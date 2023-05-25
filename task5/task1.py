@@ -1,6 +1,5 @@
 import numpy as np
 from lagrange_polynomial import get_lagrange_polynomial
-from hermit_polynomial import get_hermite_polynomial
 from common.draw_plot import draw_plot
 from common.utils import get_cheb_points, get_polynomial_accuracy
 from typing import Callable
@@ -12,7 +11,7 @@ def my_function(x):
 
 
 def my_function_derivative(x):
-    return 1 / 2 * (np.cos(x / 2 + 0.2) ** 2) - 2 * x
+    return 1 / (2 * (np.cos(x / 2 + 0.2) ** 2)) - 2 * x
 
 
 def draw_lagrange_polynomial_points(function: Callable, function_derivative: Callable, interpolation_points_count=5):
