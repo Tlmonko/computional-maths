@@ -19,4 +19,5 @@ def __find__range_index(x: float, x_coords: List[float]):
 
 
 def get_cheb_points(start, end, num):
-    return [np.cos(np.pi * (2 * k + 1) / (2 * (num + 1))) * (end - start) / 2 for k in range(num)]
+    return [np.cos(np.pi * (2 * k + 1) / (2 * (num + 1))) * (end - start) / 2 for k in range(num+1)]
+

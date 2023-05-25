@@ -36,14 +36,14 @@ def draw_lagrange_polynomial_points(function: Callable, function_derivative: Cal
               ['Primary function', 'Lagrange', 'Lagrange chebyshev', 'Hermite'])
 
 
-def find_polynomial_accuracy(function: Callable, interpolation_function: Callable, get_points: Callable = np.linspace,
-                             interpolation_points_count=5):
+def find_lagrange_polynomial_accuracy(function: Callable, get_points: Callable = np.linspace,
+                                      interpolation_points_count=5):
     interval = (-2, 2)
 
     x = get_points(*interval, num=interpolation_points_count)
     interpolation_points = (x, [function(i) for i in x])
 
-    polynomial = interpolation_function(*interpolation_points)
+    polynomial = get_lagrange_polynomial(*interpolation_points)
 
     lagrange = lambda x: np.polyval(polynomial, x)
 
@@ -56,9 +56,8 @@ def draw_and_compare(function, function_derivative):
     draw_lagrange_polynomial_points(function, function_derivative)
 
     table = [['n', 'P', 'Ch']]
-    table.extend([n, find_polynomial_accuracy(function, get_lagrange_polynomial),
-                  find_polynomial_accuracy(function, get_lagrange_polynomial, get_cheb_points)] for n in range(3, 13))
-    print(table)
+    table.extend([n, find_lagrange_polynomial_accuracy(function),
+                  find_lagrange_polynomial_accuracy(function, get_cheb_points)] for n in range(3, 13))
     print(AsciiTable(table).table)
 
 
