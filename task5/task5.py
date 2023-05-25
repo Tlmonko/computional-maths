@@ -17,7 +17,7 @@ def main():
     interval = (-2, 2)
     interpolation_points_count = 5
 
-    interval_length = interval[1] - interval[0] + 1
+    interval_length = interval[1] - interval[0]
     x = np.linspace(*interval, num=interpolation_points_count)
     interpolation_points = (x, [my_function(i) for i in x])
     derivative_points = [my_function_derivative(i) for i in x]
