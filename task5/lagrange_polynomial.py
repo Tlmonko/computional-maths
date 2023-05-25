@@ -11,7 +11,7 @@ def get_l(x: List[float], k: int, n: int):
     return np.polydiv(numerator, np.polyval(numerator, x[k]))[0]
 
 
-def get_lagrange_polynomial(x: List[float], y: List[float]):
+def get_lagrange_polynomial(x: List[float], y: List[float], *args):
     s = [0]
     n = len(x)
     for i in range(n):

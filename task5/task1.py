@@ -2,7 +2,7 @@ import numpy as np
 from lagrange_polynomial import get_lagrange_polynomial
 from hermit_polynomial import get_hermite_polynomial
 from common.draw_plot import draw_plot
-from common.utils import get_cheb_points
+from common.utils import get_cheb_points, get_polynomial_accuracy
 from typing import Callable
 from terminaltables import AsciiTable
 
@@ -27,37 +27,19 @@ def draw_lagrange_polynomial_points(function: Callable, function_derivative: Cal
     lagrange_polynomial = get_lagrange_polynomial(*interpolation_points)
     lagrange_polynomial_cheb = get_lagrange_polynomial(*cheb_interpolation_points)
 
-    hermite_polynomial = get_hermite_polynomial(x, [function(i) for i in x], [function_derivative(i) for i in x])
-
     draw_plot(interval, [interpolation_points, cheb_interpolation_points, interpolation_points, interpolation_points],
-              [function, lambda x: np.polyval(lagrange_polynomial_cheb, x),
-               lambda x: np.polyval(lagrange_polynomial, x),
-               lambda x: np.polyval(hermite_polynomial, x)],
-              ['Primary function', 'Lagrange', 'Lagrange chebyshev', 'Hermite'])
-
-
-def find_lagrange_polynomial_accuracy(function: Callable, get_points: Callable = np.linspace,
-                                      interpolation_points_count=5):
-    interval = (-2, 2)
-
-    x = get_points(*interval, num=interpolation_points_count)
-    interpolation_points = (x, [function(i) for i in x])
-
-    polynomial = get_lagrange_polynomial(*interpolation_points)
-
-    lagrange = lambda x: np.polyval(polynomial, x)
-
-    accuracy_points_count = 200
-    dx = (interval[1] - interval[0]) / accuracy_points_count
-    return max(abs(lagrange(x) - function(x)) * dx for x in np.linspace(*interval, num=accuracy_points_count))
+              [function, lambda x: np.polyval(lagrange_polynomial, x),
+               lambda x: np.polyval(lagrange_polynomial_cheb, x)],
+              ['Primary function', 'Lagrange', 'Lagrange chebyshev'])
 
 
 def draw_and_compare(function, function_derivative):
     draw_lagrange_polynomial_points(function, function_derivative)
 
     table = [['n', 'P', 'Ch']]
-    table.extend([n, find_lagrange_polynomial_accuracy(function),
-                  find_lagrange_polynomial_accuracy(function, get_cheb_points)] for n in range(3, 13))
+    table.extend([n, get_polynomial_accuracy(function, function_derivative, get_lagrange_polynomial, n)[0],
+                  get_polynomial_accuracy(function, function_derivative, get_lagrange_polynomial, n, get_cheb_points)]
+                 for n in range(3, 13))
     print(AsciiTable(table).table)
 
 
