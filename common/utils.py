@@ -23,7 +23,7 @@ def get_cheb_points(start, end, num):
 
 
 def get_accuracy(function1: Callable, function2: Callable, interval: Tuple[int, int], accuracy_points_count=200):
-    dx = (interval[1] - interval[0]) / accuracy_points_count
+    dx = (interval[1] - interval[0]) / (accuracy_points_count + 1)
     return max(abs(function1(x) - function2(x)) * dx for x in np.linspace(*interval, num=accuracy_points_count))
 
 
