@@ -20,7 +20,7 @@ def power_method(matrix: Union[np.ndarray, np.matrix]) -> tuple[np.ndarray, List
 
 if __name__ == '__main__':
     n = int(input())
-    A, eigenvalues = generate_matrix_with_eigenvalues(n)
+    A, eigenvalues, _ = generate_matrix_with_eigenvalues(n)
 
     l, x = power_method(A)
     print(f'Eigenvalue: {l}')

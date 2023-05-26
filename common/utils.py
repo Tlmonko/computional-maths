@@ -3,12 +3,12 @@ from random import randint
 from typing import Tuple, List, Callable
 
 
-def generate_matrix_with_eigenvalues(n: int) -> Tuple[np.ndarray, List[int]]:
-    eigenvalues = [randint(-100, 100) for _ in range(n)]
+def generate_matrix_with_eigenvalues(n: int) -> Tuple[np.ndarray, List[int], np.ndarray]:
+    eigenvalues = [randint(-10, 10) for _ in range(n)]
     l = np.diag(eigenvalues).astype(float)
     c = np.random.randint(-100, 100, (n, n)).astype(float)
     a = np.linalg.inv(c) @ l @ c
-    return a, eigenvalues
+    return a, eigenvalues, c
 
 
 def __find__range_index(x: float, x_coords: List[float]):
