@@ -19,35 +19,14 @@ def calc_m(s, el) -> float:
     return 1 / sqrt(2 * s * (s - el))
 
 
-def calc_v(column, index) -> np.ndarray:
-    s = calc_s(column, index)
-    m = calc_m(s, column[index + 1])
-    v = [0 if x <= index else column[x] for x in range(len(column))]
-    v[index + 1] -= s
-    return m * np.array([v])
-
-
-def cast_to_hessenberg_form(matrix: np.ndarray) -> np.ndarray:
-    n = matrix.shape[0]
-    eye = np.eye(n)
-    for i in range(n - 1):
-        v = calc_v(matrix[:, i], i)
-        h = eye - 2 * v * np.transpose(v)
-        matrix = h @ matrix
-    return matrix.round(6)
-
-
-def QR_shift(A, n):
+def qr_with_shift(A, n):
     array = []
     current_bn = None
     shift_matr = copy.copy(A)
     while n > 0:
         I = np.eye(n)
         bn = shift_matr[n - 1][n - 1]
-        if n > 1:
-            bn_1 = shift_matr[n - 1][n - 2]
-        else:
-            bn_1 = None
+        bn_1 = shift_matr[n - 1][n - 2] if n > 1 else None
         shift_matr = shift_matr - bn * I
         Q, R = np.linalg.qr(shift_matr)
         shift_matr = np.dot(R, Q) + bn * I
@@ -62,9 +41,9 @@ def QR_shift(A, n):
     return array
 
 
-def QR(A, n):
-    bn = np.diag(A)
-    matrix = A
+def qr(matrix, n):
+    bn = np.diag(matrix)
+    matrix = matrix
     previous_bn = None
     while True:
         bn_1 = np.diagonal(matrix, offset=-1)
@@ -88,59 +67,89 @@ def QR(A, n):
                     flg2 = False
                     break
         if flg1 and flg2:
-            answer = np.diag(matrix)
-            return answer
-
-        array = []
-        for i in range(n - 1):
-            if abs(bn_1[i]) > delta:
-                array.append(i)
+            return np.diag(matrix)
+        array = [i for i in range(n - 1) if abs(bn_1[i]) > delta]
 
         if len(array) == 1 and (False if previous_bn is None else (abs(bn - previous_bn) < abs(previous_bn / 3)).all()):
-            print("Матрица с блоком 2х2:")
-            print(matrix)
-            i = array[0]
-            block = matrix[i:i + 2, i:i + 2]
-            print("Блок 2х2:")
-            print(block)
-
-            help_matrix = block
-            current_root = None
-            previous_root = None
-            root_diff = np.array([1e6, 1e6])
-            while root_diff[0] > delta or root_diff[1] > delta:
-                QQ, RR = np.linalg.qr(help_matrix)
-                help_matrix = np.dot(RR, QQ)
-                a = 1
-                b = -help_matrix[0][0] - help_matrix[1][1]
-                c = help_matrix[0][0] * help_matrix[1][1] - help_matrix[0][1] * help_matrix[1][0]
-                D = np.complex_(b ** 2 - 4 * a * c + 0j)
-                arr = []
-                arr.append(np.complex_((-b + np.sqrt(D, dtype='complex_')) / 2))
-                arr.append(np.complex_((-b - np.sqrt(D, dtype='complex_')) / 2))
-                current_root = np.array(arr)
-                if previous_root is not None:
-                    root_diff = np.abs(current_root - previous_root)
-                previous_root = current_root
-            print(current_root)
-            answer = np.complex_(copy.copy(np.diag(matrix)))
-            answer[i] = current_root[0]
-            answer[i + 1] = current_root[1]
-            return answer
-
+            return get_block(matrix, array)
         previous_bn = bn
 
 
-def fix_A(diag, inv_C, C, n):
+def get_block(matrix, array):
+    print("Матрица с блоком 2х2:")
+    print(matrix)
+    i = array[0]
+    block = matrix[i:i + 2, i:i + 2]
+    print("Блок 2х2:")
+    print(block)
+
+    help_matrix = block
+    current_root = None
+    previous_root = None
+    root_diff = np.array([1e6, 1e6])
+    a = 1
+    while root_diff[0] > delta or root_diff[1] > delta:
+        QQ, RR = np.linalg.qr(help_matrix)
+        help_matrix = np.dot(RR, QQ)
+        b = -help_matrix[0][0] - help_matrix[1][1]
+        c = help_matrix[0][0] * help_matrix[1][1] - help_matrix[0][1] * help_matrix[1][0]
+        D = np.complex_(b ** 2 - 4 * a * c + 0j)
+        arr = [np.complex_((-b + np.sqrt(D, dtype='complex_')) / 2)]
+        arr.append(np.complex_((-b - np.sqrt(D, dtype='complex_')) / 2))
+        current_root = np.array(arr)
+        if previous_root is not None:
+            root_diff = np.abs(current_root - previous_root)
+        previous_root = current_root
+    print(current_root)
+    answer = np.complex_(copy.copy(np.diag(matrix)))
+    answer[i] = current_root[0]
+    answer[i + 1] = current_root[1]
+    return answer
+
+
+def fix_matrix(diag, inv_c, c, n):
     fixA = np.eye(n)
     fixA = fixA * diag
     x = copy.copy(fixA[n - 1][n - 1])
     fixA[n - 1][n - 1] = fixA[n - 2][n - 2]
     fixA[n - 1][n - 2] = x
     fixA[n - 2][n - 1] = -x
-    fixA = np.dot(inv_C, fixA)
-    fixA = np.dot(fixA, C)
+    fixA = np.dot(inv_c, fixA)
+    fixA = np.dot(fixA, c)
     return fixA, diag
+
+
+def sgn_plus(i):
+    return 1 if i >= 0 else -1
+
+
+def calc_h(A, n, p, shift):
+    I = np.eye(n)
+    s = sum(A[i][p] ** 2 for i in range(p + shift, n))
+    s = s ** 0.5
+    s = -1 * sgn_plus(A[p + shift][p]) * s
+    mu = 1 / abs(2 * s * (s - A[p + shift][p])) ** 0.5
+    arr = []
+    for k in range(n):
+        if k < p + shift:
+            arr.append(0)
+        elif k == p + shift:
+            arr.append(A[k][p] - s)
+        else:
+            arr.append(A[k][p])
+    v = np.array(arr)
+    v = mu * v
+    v = v.reshape(n, 1)
+    return I - 2 * np.dot(v, v.reshape(1, n))
+
+
+def cast_to_hessenberg_form(matrix: np.ndarray):
+    B = matrix.copy()
+    for k in range(n - 2):
+        h = calc_h(B, n, k, 1)
+        C = np.dot(h, B)
+        B = np.dot(C, h)
+    return B
 
 
 if __name__ == '__main__':
@@ -154,17 +163,9 @@ if __name__ == '__main__':
     # a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     hess = cast_to_hessenberg_form(a)
     print("QR - алгоритм со сдвигами:")
-    lambda_vec = QR_shift(hess, n)
+    lambda_vec = qr_with_shift(hess, n)
     print(lambda_vec)
-    print('=================================================================')
-    for i in range(len(lambda_vec)):
-        value, vector = inversed_power_method(a, lambda_vec[i])
-        print(eigenvalues[i], "- текущее собственное число; ", "сдвиг:", lambda_vec[i],
-              "cобственное число из алгоритма:",
-              value,
-              "; \nCобственный вектор из алгоритма:\n", vector)
-    print('=================================================================')
-    A_1, new_diag = fix_A(eigenvalues, np.linalg.inv(c), c, n)
+    A_1, new_diag = fix_matrix(eigenvalues, np.linalg.inv(c), c, n)
     print("Новая матрица А:")
     print(A_1)
-    print(QR(A_1, n))
+    print(qr(A_1, n))
