@@ -10,7 +10,14 @@ def my_function(x):
 
 
 def my_function_derivative(x):
-    return 1 / 2 * (np.cos(x / 2 + 0.2) ** 2) - 2 * x
+    return 1 / (2 * np.cos(x / 2 + 0.2) ** 2) - 2 * x
+
+# def my_function(x):
+#     return np.tan(x) - np.cos(3 * x) + 0.1
+#
+#
+# def my_function_derivative(x):
+#     return 1 / (np.cos(x) ** 2) + 3 * np.sin(3 * x)
 
 
 def main():

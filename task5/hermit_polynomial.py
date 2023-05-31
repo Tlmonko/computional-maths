@@ -25,7 +25,6 @@ def get_hermite_polynomial(x: List[float], y: List[float], y_derivative: List[in
     matrix = __get_matrix(x, second_der=y_second_derivative is not None)
     b = __get_free_coeffs(y, y_derivative, y_second_derivative)
 
-
     coefficients = np.linalg.solve(matrix, b)
 
     return coefficients[::-1]

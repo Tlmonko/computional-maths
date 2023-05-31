@@ -26,8 +26,8 @@ if __name__ == '__main__':
     n = int(input())
     A, eigenvalues, _ = generate_matrix_with_eigenvalues(n)
 
-    print('Given eigenvalue:', eigenvalues[0])
+    print('Given eigenvalue:', eigenvalues)
 
-    l, x = inversed_power_method(A, eigenvalues[0])
+    l, x = inversed_power_method(A, eigenvalues[0] + 0.3)
     print(f'Calculated eigenvalue: {round(l, 6)}')
     print(f'Calculated eigenvector: {x}')

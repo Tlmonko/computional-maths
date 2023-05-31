@@ -33,7 +33,6 @@ def cast_to_hessenberg_form(matrix: np.ndarray) -> np.ndarray:
     for i in range(n - 1):
         v = calc_v(matrix[:, i], i)
         h = eye - 2 * v * np.transpose(v)
-        print(h)
         matrix = h @ matrix
     return matrix.round(6)
 
@@ -150,7 +149,7 @@ if __name__ == '__main__':
 
     n = int(input())
     a, eigenvalues, c = generate_matrix_with_eigenvalues(n)
-    # print(eigenvalues)
+    print(eigenvalues)
     # print(a)
     # a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     hess = cast_to_hessenberg_form(a)

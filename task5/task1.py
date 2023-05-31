@@ -37,7 +37,7 @@ def draw_and_compare(function, function_derivative):
 
     table = [['n', 'P', 'Ch']]
     table.extend([n, get_polynomial_accuracy(function, function_derivative, get_lagrange_polynomial, n)[0],
-                  get_polynomial_accuracy(function, function_derivative, get_lagrange_polynomial, n, get_cheb_points)]
+                  get_polynomial_accuracy(function, function_derivative, get_lagrange_polynomial, n, get_cheb_points)[0]]
                  for n in range(3, 13))
     print(AsciiTable(table).table)
 

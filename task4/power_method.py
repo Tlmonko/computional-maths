@@ -23,5 +23,6 @@ if __name__ == '__main__':
     A, eigenvalues, _ = generate_matrix_with_eigenvalues(n)
 
     l, x = power_method(A)
+    print(eigenvalues)
     print(f'Eigenvalue: {l}')
     print(f'Eigenvector: {x}')
