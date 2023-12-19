@@ -7,7 +7,8 @@ from terminaltables import AsciiTable
 
 
 def my_function(x):
-    return np.tan(x / 2 + 0.2) - x ** 2 + 2
+    # return np.tan(x / 2 + 0.2) - x ** 2 + 2
+    return abs(x)
 
 
 def my_function_derivative(x):
@@ -15,7 +16,8 @@ def my_function_derivative(x):
 
 
 def draw_lagrange_polynomial_points(function: Callable, function_derivative: Callable, interpolation_points_count=5):
-    interval = (-2, 2)
+    interval = (-1, 1)
+    interpolation_points_count = 4
 
     x = np.linspace(*interval, num=interpolation_points_count)
     interpolation_points = (x, [function(i) for i in x])

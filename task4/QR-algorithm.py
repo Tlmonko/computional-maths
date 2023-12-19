@@ -1,7 +1,6 @@
 from math import sqrt
 from typing import Union, List
 from common.utils import generate_matrix_with_eigenvalues
-from inversed_power_method import inversed_power_method
 import copy
 
 import numpy as np
@@ -165,7 +164,7 @@ if __name__ == '__main__':
     print("QR - алгоритм со сдвигами:")
     lambda_vec = qr_with_shift(hess, n)
     print(lambda_vec)
-    A_1, new_diag = fix_matrix(eigenvalues, np.linalg.inv(c), c, n)
+    new_matrix, new_diag = fix_matrix(eigenvalues, np.linalg.inv(c), c, n)
     print("Новая матрица А:")
-    print(A_1)
-    print(qr(A_1, n))
+    print(new_matrix)
+    print(qr(new_matrix, n))
